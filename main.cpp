@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     }
     char *fileName = argv[1];
     cv::Mat image = cv::imread(fileName,0);
-    cv::Mat cImage = cv::imread(fileName,-1);
+    cv::Mat cImage = cv::imread(fileName,1);
     if( !image.data ) {
         cout << "Unable to load image, exit..." << endl;
         return 1;

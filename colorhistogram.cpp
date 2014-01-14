@@ -31,14 +31,11 @@ cv::MatND ColorHistogram::getHistogram(const cv::Mat &image) {
 }
 
 std::vector<cv::MatND> ColorHistogram::getChannelHistogram(const cv::Mat &image) {
-    /*
-     * Split color image by BGR channel and draw histogram per BGR
-     */
-    //split image to BGR channels
+    //Split color image by BGR channel and draw histogram per BGR(A)
     std::vector<cv::Mat> planes;
     cv::split(image,planes);
     int channels = planes.size();
-    CV_Assert(channels == 3); //BGR channels
+    CV_Assert(channels < 5); //BGRA channels most
     Histogram1D h;
     std::vector<cv::MatND> chanHistoVec;
 
@@ -70,7 +67,7 @@ cv::Mat ColorHistogram::getChannelHistogramImage(const cv::Mat &image) {
     }
 
     //BGR pure color scalar
-    cv::Scalar colors[] = {cv::Scalar(255,0,0),cv::Scalar(0,255,0),cv::Scalar(0,0,255)};
+    cv::Scalar colors[] = {cv::Scalar(255,0,0),cv::Scalar(0,255,0),cv::Scalar(0,0,255),cv::Scalar(128,128,128)};
     //draw line per each channel
     for(int i=0; i<channels; i++) {
         cv::MatND chanHisto = chanHistoVec[i];

@@ -19,6 +19,13 @@ public:
 
     // Get histogram image
     cv::Mat getHistogramImage(const cv::Mat &image);
+
+    //Apply to lookup table
+    cv::Mat applyLookUp(const cv::Mat& image, // input image
+                        const cv::Mat& lookup);// 1x256 uchar matrix
+
+    //Strech histogram to cover full range [0,255]
+    cv::Mat stretch(const cv::Mat &image, int minValue=0);
 };
 
 #endif // HISTOGRAM1D_H

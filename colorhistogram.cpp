@@ -30,6 +30,21 @@ cv::MatND ColorHistogram::getHistogram(const cv::Mat &image) {
     return hist;
 }
 
+cv::SparseMat ColorHistogram::getSparseHistogram(const cv::Mat &image) {
+    cv::SparseMat hist(3,histSize,CV_32F);
+    // Compute histogram
+    cv::calcHist(&image,
+                 1, // histogram of 1 image only
+                 channels, // the channel used
+                 cv::Mat(), // no mask is used
+                 hist, // the resulting histogram
+                 3, // it is a 3D histogram
+                 histSize, // number of bins
+                 ranges // pixel value range
+                 );
+    return hist;
+}
+
 std::vector<cv::MatND> ColorHistogram::getChannelHistogram(const cv::Mat &image) {
     //Split color image by BGR channel and draw histogram per BGR(A)
     std::vector<cv::Mat> planes;

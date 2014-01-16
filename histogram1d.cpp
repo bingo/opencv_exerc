@@ -48,3 +48,49 @@ cv::Mat Histogram1D::getHistogramImage(const cv::Mat &image){
     }
     return histImg;
 }
+
+//Map to lookup table
+cv::Mat Histogram1D::applyLookUp(const cv::Mat& image, // input image
+                                 const cv::Mat& lookup) { // 1x256 uchar matrix
+    // the output image
+    cv::Mat result;
+    // apply lookup table
+    cv::LUT(image,lookup,result);
+    return result;
+}
+
+//Stretch image histogram to cover all range [0,255]
+cv::Mat Histogram1D::stretch(const cv::Mat &image, int minValue) {
+    // Compute histogram first
+    cv::MatND hist= getHistogram(image);
+    // find left extremity of the histogram
+    int imin= 0;
+    for( ; imin < histSize[0]; imin++ ) {
+        if (hist.at<float>(imin) > minValue)
+            break;
+    }
+    // find right extremity of the histogram
+    int imax= histSize[0]-1;
+    for( ; imax >= 0; imax-- ) {
+        if (hist.at<float>(imax) > minValue)
+            break;
+    }
+    // Create lookup table
+    int dim(256);
+    cv::Mat lookup(1, // 1 dimension
+                   &dim, // 256 entries
+                   CV_8U); // uchar
+    // Build lookup table
+    for (int i=0; i<256; i++) {
+        // stretch between imin and imax
+        if (i < imin) lookup.at<uchar>(i)= 0;
+        else if (i > imax) lookup.at<uchar>(i)= 255;
+        // linear mapping
+        else lookup.at<uchar>(i)= static_cast<uchar>(
+                    255.0*(i-imin)/(imax-imin)+0.5);
+    }
+    // Apply lookup table
+    cv::Mat result;
+    result= applyLookUp(image,lookup);
+    return result;
+}

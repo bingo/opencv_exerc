@@ -13,6 +13,7 @@ private:
 public:
     ColorHistogram();
     cv::MatND getHistogram(const cv::Mat &image);
+    cv::SparseMat getSparseHistogram(const cv::Mat &image);
     std::vector<cv::MatND> getChannelHistogram(const cv::Mat &image);
     cv::Mat getChannelHistogramImage(const cv::Mat &image);
 };

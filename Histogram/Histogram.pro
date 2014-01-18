@@ -18,7 +18,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     histogram1d.cpp \
     colorhistogram.cpp \
-    contentfinder.cpp
+    contentfinder.cpp \
+    imagecomparator.cpp
 
 win32 {
 INCLUDEPATH += D:/opencv/include
@@ -29,7 +30,17 @@ LIBS += -LD:/opencv/lib \
 -lopencv_video246.dll
 }
 
+macx {
+INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib \
+-lopencv_core \
+-lopencv_highgui \
+-lopencv_imgproc \
+-lopencv_video
+}
+
 HEADERS += \
     histogram1d.h \
     colorhistogram.h \
-    contentfinder.h
+    contentfinder.h \
+    imagecomparator.h

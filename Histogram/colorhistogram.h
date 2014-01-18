@@ -18,6 +18,8 @@ public:
     cv::Mat getChannelHistogramImage(const cv::Mat &image);
     //get HUE histogram
     cv::MatND getHueHistogram(const cv::Mat &image, int minSatuation = 0);
+    //reduce color
+    cv::Mat colorReduce(const cv::Mat &image, int div = 64);
 };
 
 #endif // COLORHISTOGRAM_H

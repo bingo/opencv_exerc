@@ -1,9 +1,12 @@
-#include <QCoreApplication>
 #include <iostream>
+#include <sstream>
+
+#include <QCoreApplication>
 
 #include "histogram1d.h"
 #include "colorhistogram.h"
 #include "contentfinder.h"
+#include "imagecomparator.h"
 
 using namespace std;
 
@@ -90,14 +93,39 @@ void testMeanShiftBackProjection(const cv::Mat &imageSrc, const cv::Rect &region
     cv::imshow("Result Image",imageRslt);
 }
 
+void testImageCompare() {
+    //test similarity sky1 and 2/3/4.jpg
+    ImageComparator comp;
+    cv::Mat imgRef = cv::imread("images/sky1.jpg",1);
+    if(!imgRef.data) {
+        return;
+    }
+    comp.setReferenceImage(imgRef);
+    for(int i=2;i<5;i++) {
+        stringstream ssfn;
+        ssfn << "images/sky" << i << ".jpg";
+        cv::Mat imgToCmp = cv::imread(ssfn.str(),1);
+        if(!imgToCmp.data) {
+            continue;
+        }
+        double result = comp.compare(imgToCmp);
+        //draw "Similarity" rate on window caption
+        stringstream caption;
+        caption << "Similarity:" << result;
+        cv::imshow(caption.str(), imgToCmp);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc,argv);
+    string fileName;
     if(argc < 2) {
-        cout << "Usage: Histogram <img_file>!" << endl;
-        return 0;
+        cout << "Usage: Histogram <img_file>! Default image loaded" << endl;
+        fileName = "images/sky1.jpg";
+    }else{
+        fileName = argv[1];
     }
-    char *fileName = argv[1];
     cv::Mat image = cv::imread(fileName,0);
     cv::Mat cImage = cv::imread(fileName,1);
     if( !image.data || !cImage.data ) {
@@ -106,22 +134,23 @@ int main(int argc, char *argv[])
     }
 
     //show original image to compare
-    /*cv::imshow("Origin", image);
-    Histogram1D h;
-    cv::Mat histImage = h.getHistogramImage(image);
-    cv::imshow("Histogram", histImage);*/
+    //    cv::imshow("Origin", image);
+    //    Histogram1D h;
+    //    cv::Mat histImage = h.getHistogramImage(image);
+    //    cv::imshow("Histogram", histImage);
 
-    //testGrayHistogram(image);
-    //testColorHistogram(cImage);
-    //testReverseImage(image);
-    //testStrechImage(image,128);
-    //testEqualizerImage(image);
-    //cv::Rect region(100,100,50,50);
-    //testBackProjection(image,region);
-    cv::Mat imageSrc = cv::imread("D:/images/baboon1.jpg", 1);
-    cv::Rect region(110,260,35,40);
-    cv::Mat imageDst = cv::imread("D:/images/baboon3.jpg", 1);
-    testMeanShiftBackProjection(imageSrc,region,imageDst);
+    //  testGrayHistogram(image);
+    //  testColorHistogram(cImage);
+    //  testReverseImage(image);
+    //  testStrechImage(image,128);
+    //  testEqualizerImage(image);
+    //  cv::Rect region(100,100,50,50);
+    //  testBackProjection(image,region);
+    //  cv::Mat imageSrc = cv::imread("images/baboon1.jpg", 1);
+    //  cv::Rect region(110,260,35,40);
+    //  cv::Mat imageDst = cv::imread("images/baboon3.jpg", 1);
+    //  testMeanShiftBackProjection(imageSrc,region,imageDst);
+    testImageCompare();
 
     cv::waitKey();
 

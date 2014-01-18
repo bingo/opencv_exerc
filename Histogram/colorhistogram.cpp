@@ -127,3 +127,29 @@ cv::MatND ColorHistogram::getHueHistogram(const cv::Mat &image, int minSatuation
     hranges[1] = 255.0;
     return hist;
 }
+
+cv::Mat ColorHistogram::colorReduce(const cv::Mat &image, int div) {
+    cv::Mat result;
+    result.create(image.rows, image.cols, image.type());
+    int nl= image.rows; // number of lines
+    int nc= image.cols * image.channels();
+    if (image.isContinuous())
+    {
+        // then no padded pixels
+        nc= nc*nl;
+        nl= 1;  // it is now a 1D array
+    }
+    // this loop is executed only once
+    // in case of continuous images
+    for (int j=0; j<nl; j++) {
+        const uchar* data= image.ptr<uchar>(j);
+        uchar* rdata = result.ptr<uchar>(j);
+        for (int i=0; i<nc; i++) {
+            // process each pixel ---------------------
+            rdata[i]= data[i]/div*div + div/2;
+            // end of pixel processing ----------------
+        } // end of line
+    }
+    return result;
+}
+

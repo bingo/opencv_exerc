@@ -3,6 +3,7 @@
 
 #include "histogram1d.h"
 #include "colorhistogram.h"
+#include "contentfinder.h"
 
 using namespace std;
 
@@ -41,6 +42,54 @@ void testStrechImage(const cv::Mat &image, int minVal=0) {
     cv::imshow("Streched Histogram",histo);
 }
 
+void testEqualizerImage(const cv::Mat &image) {
+    Histogram1D h;
+    cv::Mat eqlImage = h.equalize(image);
+    cv::imshow("Equalizer",eqlImage);
+    cv::Mat histo = h.getHistogramImage(eqlImage);
+    cv::imshow("Equalizer Histogram",histo);
+}
+
+void testBackProjection(const cv::Mat &image, const cv::Rect &region) {
+    Histogram1D h;
+    cv::Mat bpImage = h.backProject(image,region);
+    //highlight region area
+    cv::rectangle(bpImage,region,cv::Scalar(128));
+    cv::imshow("Back Projection", bpImage);
+}
+
+void testMeanShiftBackProjection(const cv::Mat &imageSrc, const cv::Rect &region, const cv::Mat &imageDst) {
+    //Display src/dst image
+    cv::imshow("Src Image", imageSrc);
+    ContentFinder finder;
+    ColorHistogram hc;
+    int minSat = 65;
+    cv::Mat imageROI = imageSrc(region);
+    cv::MatND hist = hc.getHueHistogram(imageROI,minSat);
+    finder.setHistogram(hist);
+    cv::Mat hsv;
+    cv::cvtColor(imageDst,hsv,CV_BGR2HSV);
+    std::vector<cv::MatND> v;
+    cv::split(hsv,v);
+    //filter out low satuation
+    cv::threshold(v[1],v[1],minSat,255.0,cv::THRESH_BINARY);
+    //back projection find
+    int ch[] = {0};
+    cv::Mat result = finder.find(hsv,0.0,180.0,ch,1);
+    // Eliminate low stauration pixels
+    cv::bitwise_and(result,v[1],result);
+
+    //meanshift algo.
+    cv::Rect rect(region);
+    cv::Mat imageRslt = imageDst.clone();
+    cv::rectangle(imageRslt, rect, cv::Scalar(0,0,255)); //origion rect
+    cv::TermCriteria criteria(cv::TermCriteria::MAX_ITER,
+                              10,0.01);
+    cv::meanShift(result,rect,criteria);
+    cv::rectangle(imageRslt, rect, cv::Scalar(0,255,0)); //result rect
+    cv::imshow("Result Image",imageRslt);
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc,argv);
@@ -57,15 +106,22 @@ int main(int argc, char *argv[])
     }
 
     //show original image to compare
-    cv::imshow("Origin", image);
+    /*cv::imshow("Origin", image);
     Histogram1D h;
     cv::Mat histImage = h.getHistogramImage(image);
-    cv::imshow("Histogram", histImage);
+    cv::imshow("Histogram", histImage);*/
 
     //testGrayHistogram(image);
     //testColorHistogram(cImage);
     //testReverseImage(image);
-    testStrechImage(image,128);
+    //testStrechImage(image,128);
+    //testEqualizerImage(image);
+    //cv::Rect region(100,100,50,50);
+    //testBackProjection(image,region);
+    cv::Mat imageSrc = cv::imread("D:/images/baboon1.jpg", 1);
+    cv::Rect region(110,260,35,40);
+    cv::Mat imageDst = cv::imread("D:/images/baboon3.jpg", 1);
+    testMeanShiftBackProjection(imageSrc,region,imageDst);
 
     cv::waitKey();
 

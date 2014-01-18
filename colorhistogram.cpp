@@ -104,3 +104,26 @@ cv::Mat ColorHistogram::getChannelHistogramImage(const cv::Mat &image) {
     }
     return chanHistImage;
 }
+
+cv::MatND ColorHistogram::getHueHistogram(const cv::Mat &image, int minSatuation) {
+    cv::MatND hist;
+    //Assuming input is BGR, change it to HSV color space
+    cv::Mat hsv;
+    cv::cvtColor(image,hsv,CV_BGR2HSV);
+    cv::Mat mask;
+    if(minSatuation > 0) {
+        //split to 3 channels: H/S/V
+        std::vector<cv::MatND> v;
+        cv::split(hsv,v);
+        //prepare mask to ignore low satuation
+        cv::threshold(v[1],mask,minSatuation,255,cv::THRESH_BINARY);
+    }
+
+    //prepare para. for HSV histogram calculation
+    hranges[1] = 180.0;
+    channels[0] = 0;
+    cv::calcHist(&hsv,1,channels,mask,hist,1,histSize,ranges);
+    //restore hranges to [0,255]
+    hranges[1] = 255.0;
+    return hist;
+}

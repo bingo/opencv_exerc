@@ -17,16 +17,19 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     histogram1d.cpp \
-    colorhistogram.cpp
+    colorhistogram.cpp \
+    contentfinder.cpp
 
 win32 {
 INCLUDEPATH += D:/opencv/include
 LIBS += -LD:/opencv/lib \
 -lopencv_core246.dll \
 -lopencv_highgui246.dll \
--lopencv_imgproc246.dll
+-lopencv_imgproc246.dll \
+-lopencv_video246.dll
 }
 
 HEADERS += \
     histogram1d.h \
-    colorhistogram.h
+    colorhistogram.h \
+    contentfinder.h

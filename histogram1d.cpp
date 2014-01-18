@@ -94,3 +94,28 @@ cv::Mat Histogram1D::stretch(const cv::Mat &image, int minValue) {
     result= applyLookUp(image,lookup);
     return result;
 }
+
+cv::Mat Histogram1D::equalize(const cv::Mat &image) {
+    cv::Mat result;
+    cv::equalizeHist(image,result);
+    return result;
+}
+
+cv::Mat Histogram1D::backProject(const cv::Mat &image, const cv::Rect region) {
+    cv::Mat imageROI = image(region);
+
+    cv::MatND histogram = getHistogram(imageROI);
+
+    cv::normalize(histogram,histogram,1.0);
+    cv::Mat result;
+    cv::calcBackProject(&image,
+                        1, // one image
+                        channels, // the channels used
+                        histogram, // the histogram we are backprojecting
+                        result, // the resulting back projection image
+                        ranges, // the range of values, for each dimension
+                        255.0 // a scaling factor
+                        );
+
+    return result;
+}

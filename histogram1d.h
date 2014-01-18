@@ -26,6 +26,12 @@ public:
 
     //Strech histogram to cover full range [0,255]
     cv::Mat stretch(const cv::Mat &image, int minValue=0);
+
+    //Equalizer histogram
+    cv::Mat equalize(const cv::Mat &image);
+
+    //Back projection
+    cv::Mat backProject(const cv::Mat &image, const cv::Rect region);
 };
 
 #endif // HISTOGRAM1D_H

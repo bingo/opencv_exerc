@@ -16,6 +16,8 @@ public:
     cv::SparseMat getSparseHistogram(const cv::Mat &image);
     std::vector<cv::MatND> getChannelHistogram(const cv::Mat &image);
     cv::Mat getChannelHistogramImage(const cv::Mat &image);
+    //get HUE histogram
+    cv::MatND getHueHistogram(const cv::Mat &image, int minSatuation = 0);
 };
 
 #endif // COLORHISTOGRAM_H
